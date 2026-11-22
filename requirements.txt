@@ -1,0 +1,7 @@
+opencv-python==4.12.0.88
+numpy==2.2.6
+pytest==8.4.2
+streamlit==1.50.0
+plotly==6.3.1
+imageio-ffmpeg==0.6.0
+torch==2.8.0
