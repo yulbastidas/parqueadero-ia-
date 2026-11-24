@@ -1,0 +1,158 @@
+{
+  "train": {
+    "libres": [
+      "Cuántas plazas libres quedan",
+      "Cuántos lugares libres hay",
+      "Número de espacios libres",
+      "Dime la cantidad disponible",
+      "Cuántas plazas tenemos disponibles",
+      "Necesito contar los puestos libres",
+      "Total de cupos libres",
+      "Cuántos cupos quedan disponibles",
+      "Qué cantidad de lugares queda libre",
+      "Cuántos espacios puedo usar",
+      "Cuántas plazas están desocupadas",
+      "Dame el número de sitios disponibles",
+      "Puedes contar las plazas disponibles",
+      "Hay cuántos sitios libres",
+      "Dime cuántos huecos quedan",
+      "Cuántos puestos sin ocupar quedan"
+    ],
+    "ubicacion": [
+      "Dónde puedo dejar el auto",
+      "En qué plaza puedo estacionar",
+      "Cuáles son los espacios libres",
+      "Indica la ubicación de los puestos libres",
+      "Dame los identificadores disponibles",
+      "Dónde debo aparcar",
+      "Qué lugares están libres",
+      "Señala los números de plaza disponibles",
+      "Lista las plazas libres",
+      "En qué puestos cabe mi carro",
+      "Dónde encuentro un cupo libre",
+      "A qué sitio voy para estacionar",
+      "Nombra las plazas disponibles",
+      "Qué códigos de plaza están libres",
+      "Dime dónde estacionar",
+      "Dónde puedo parquear el coche"
+    ],
+    "porcentaje": [
+      "Qué porcentaje de plazas está ocupado",
+      "Dime el porcentaje de ocupación",
+      "Cuál es la ocupación porcentual",
+      "Qué proporción del estacionamiento está ocupada",
+      "Porcentaje ocupado ahora",
+      "Qué parte de la capacidad está en uso",
+      "Cuánto es la ocupación en porcentaje",
+      "Dame el nivel de ocupación en %",
+      "Tasa de ocupación actual",
+      "Qué fracción de las plazas se ocupa",
+      "Muéstrame el porcentaje utilizado",
+      "Cuánto representa la ocupación porcentual",
+      "Qué porcentaje de los sitios se usa",
+      "Quiero el indicador de ocupación",
+      "En porcentaje cuánto está ocupado",
+      "Cuál es el % de ocupación"
+    ],
+    "lleno": [
+      "Está lleno el parqueadero",
+      "Se llenó el estacionamiento",
+      "Está a tope",
+      "Queda algún sitio o está lleno",
+      "Ya se agotaron los cupos",
+      "Hay por lo menos una plaza disponible",
+      "Está todo ocupado",
+      "Puedo entrar todavía",
+      "Hay sitio para un coche",
+      "No queda ni un puesto",
+      "Llegó al límite de capacidad",
+      "Se ocuparon todas las plazas",
+      "Hay algún espacio para aparcar",
+      "Aún hay lugar para el auto",
+      "Está completo el estacionamiento",
+      "Tiene espacio para otro carro"
+    ],
+    "fuera": [
+      "Cuál es la tarifa por hora",
+      "A qué hora cierran",
+      "Cómo estará el clima",
+      "Dime la capital de Colombia",
+      "Busca una receta de sopa",
+      "Se puede pagar con tarjeta",
+      "Qué precio tiene el abono mensual",
+      "Hay baños en el parqueadero",
+      "Reserva una plaza para mañana",
+      "Puedes lavar mi carro",
+      "Hay cámaras de seguridad",
+      "Pronostica cuántas plazas habrá mañana",
+      "Cuál es el horario de atención",
+      "Qué marcas de auto venden",
+      "Qué porcentaje de descuento ofrecen",
+      "Dónde está la salida peatonal",
+      "Dime un chiste",
+      "Cuántos años tienes"
+    ]
+  },
+  "val": {
+    "libres": [
+      "Cuántas plazas sin ocupar hay ahora",
+      "Cuál es el número de cupos que quedan",
+      "Indícame la cantidad de puestos vacíos"
+    ],
+    "ubicacion": [
+      "En cuáles plazas hay espacio para aparcar",
+      "Identifica los puestos libres",
+      "Dónde encuentro lugar para dejar el coche"
+    ],
+    "porcentaje": [
+      "Cuál es la tasa porcentual de ocupación",
+      "Indícame qué % está ocupado",
+      "Qué porcentaje se encuentra en uso"
+    ],
+    "lleno": [
+      "El estacionamiento ya está saturado",
+      "Hay lugar todavía para estacionar",
+      "Se acabaron todos los puestos"
+    ],
+    "fuera": [
+      "Necesito el teléfono del gerente",
+      "Hay descuento para estudiantes",
+      "Dónde pago el recibo",
+      "Cuánto cuesta estacionar"
+    ]
+  },
+  "test": {
+    "libres": [
+      "Cuántas plazas hay libres",
+      "Qué número de sitios vacíos hay",
+      "Cuántos cupos tengo para escoger",
+      "Dame el total de lugares sin ocupar"
+    ],
+    "ubicacion": [
+      "Dónde puedo estacionar",
+      "Cuáles plazas siguen disponibles",
+      "Enumera los códigos de los espacios libres",
+      "En qué lugar puedo parquear"
+    ],
+    "porcentaje": [
+      "Qué porcentaje está ocupado",
+      "Indica la proporción de puestos ocupados",
+      "Cuál es el porcentaje que se está usando",
+      "A cuánto asciende el nivel de ocupación"
+    ],
+    "lleno": [
+      "Está lleno",
+      "Todavía caben más vehículos",
+      "Queda al menos un cupo para entrar",
+      "El parqueadero agotó su capacidad"
+    ],
+    "fuera": [
+      "Qué hora es",
+      "Puedo apartar un cupo para el viernes",
+      "En qué calle está la entrada",
+      "Qué porcentaje de IVA cobran",
+      "Traduce un poema al francés",
+      "Cuántos minutos puedo quedarme"
+    ]
+  }
+}

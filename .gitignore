@@ -1,5 +1,9 @@
 /.python/
 /.venv/
+/.local-deps/
+/data/
+/models/
+/results/
 __pycache__/
 .pytest_cache/
 *.py[cod]

@@ -12,13 +12,20 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from src.assistant import answer_status
+from src.assistant import IntentClassifier, answer_status
 from src.detector import ROOT, BackgroundDetector, DetectorConfig
 from src.monitoring import AnalysisJob
 from src.occupancy import OccupancyMonitor, validate_spaces
 from src.space_models import SpaceClassifier
 
 MODEL_DIR = ROOT / "models" / "ocupacion"
+VEHICLE_CHECKPOINT = ROOT / "models" / "vehiculos" / "vehicles.pt"
+INTENT_CHECKPOINT = ROOT / "models" / "asistente" / "intent.pt"
+
+
+@st.cache_resource
+def load_assistant(path: Path, modified_ns: int) -> IntentClassifier:
+    return IntentClassifier(path)
 
 
 @st.cache_data(show_spinner=False, max_entries=4)
@@ -89,6 +96,11 @@ def monitoring_page() -> None:
     running = job is not None and job.running
     checkpoints = {path.stem: path for path in sorted(MODEL_DIR.glob("*.pt"))}
     method = st.selectbox("Método", [*checkpoints, "Comparación de fondo"])
+    use_boxes = st.checkbox("Detectar vehículos con cajas", disabled=method not in checkpoints
+                            or not VEHICLE_CHECKPOINT.is_file())
+    use_boxes = use_boxes and method in checkpoints and VEHICLE_CHECKPOINT.is_file()
+    if method in checkpoints and not VEHICLE_CHECKPOINT.is_file():
+        st.caption("Entrena el detector de vehículos para habilitar las cajas.")
     with st.form("video_configuration"):
         video = st.file_uploader("Video MP4 de cámara fija", type=["mp4"])
         reference = None
@@ -111,6 +123,10 @@ def monitoring_page() -> None:
                 raise ValueError("Configura al menos una plaza.")
             if method in checkpoints:
                 detector = SpaceClassifier(checkpoints[method], spaces)
+                if use_boxes:
+                    from src.vehicle_model import VehicleModel
+
+                    detector = VehicleModel(VEHICLE_CHECKPOINT, detector)
             else:
                 if reference is None:
                     raise ValueError("Carga la imagen de referencia vacía.")
@@ -144,6 +160,7 @@ def dashboard_page() -> None:
         return
     state = latest.occupancy
     indicators(state)
+    st.write("Plazas libres · " + (", ".join(state.available) or "Ninguna confirmada"))
     st.caption(f"Análisis iniciado el {job.started:%d/%m/%Y a las %H:%M}. Datos del video procesado.")
     history = pd.DataFrame(asdict(row) for row in records)
     split = pd.DataFrame({"Estado": ["Libres", "Ocupadas", "En confirmación"],
@@ -194,26 +211,53 @@ def main() -> None:
         dashboard_page()
     elif page == "Disponibilidad":
         st.header("Consulta de disponibilidad")
-        st.caption("Consulta por reglas. Usa los resultados del último video analizado.")
-        question = st.selectbox("Pregunta", ["¿Cuántas plazas quedan libres?", "¿Cuáles son las plazas libres?",
-                                             "¿Cuál es la ocupación?", "¿Está lleno el parqueadero?"])
-        job = st.session_state.get("job")
-        latest = job.snapshot()[0] if job is not None else None
-        st.write(answer_status(question, latest.occupancy if latest else None))
+        st.caption("El asistente consulta el último fotograma procesado del mismo análisis que muestra el Dashboard.")
+        if not INTENT_CHECKPOINT.is_file():
+            st.info("Entrena el asistente con python train_assistant.py para habilitar las consultas.")
+            return
+        with st.form("pregunta_disponibilidad"):
+            question = st.text_input("Pregunta", placeholder="¿Dónde puedo estacionar?", max_chars=200)
+            submitted = st.form_submit_button("Consultar")
+        if submitted and question.strip():
+            job = st.session_state.get("job")
+            latest = job.snapshot()[0] if job is not None else None
+            try:
+                classifier = load_assistant(INTENT_CHECKPOINT, INTENT_CHECKPOINT.stat().st_mtime_ns)
+                st.write(answer_status(classifier.predict(question), latest.occupancy if latest else None))
+                if latest:
+                    st.caption(f"Fotograma consultado · {latest.frame.index + 1}")
+            except (OSError, ValueError, KeyError, RuntimeError) as error:
+                st.error(str(error))
     else:
-        st.header("Evaluación de ocupación")
+        st.header("Evaluación")
+        st.subheader("Ocupación")
         report = MODEL_DIR / "evaluation.json"
         if report.is_file():
             data = json.loads(report.read_text(encoding="utf-8"))
             if Path(data.get("manifest", "")).parent.name == "piloto-local":
                 st.warning("Piloto de una sola toma. Las métricas no estiman el rendimiento en otros parqueaderos.")
-            rows = [{"Modelo": name, "Parámetros": item["parameters"],
+            rows = [{"Modelo": name, "Parámetros": item["parameters"], "Tiempo (s)": item["seconds"],
+                     "Predice ambas clases": item["test"].get("predicts_both_classes"),
                      **{key: item["test"][key] for key in ("accuracy", "precision", "recall", "f1")}}
                     for name, item in data["models"].items()]
             st.dataframe(rows, hide_index=True)
             st.download_button("Descargar evaluación", report.read_bytes(), "evaluacion.json", "application/json")
         else:
             st.info("Ejecuta el entrenamiento sobre imágenes etiquetadas para obtener los resultados de prueba.")
+        for title, directory, filename in (
+            ("Detección de vehículos", VEHICLE_CHECKPOINT.parent, "evaluacion-vehiculos.json"),
+            ("Intenciones del asistente", INTENT_CHECKPOINT.parent, "evaluacion-asistente.json"),
+        ):
+            report = directory / "evaluation.json"
+            if report.is_file():
+                payload = report.read_bytes()
+                data = json.loads(payload)
+                with st.expander(title):
+                    if "accuracy" in data:
+                        st.metric("Exactitud en preguntas nuevas", f"{data['accuracy']:.1%}")
+                    else:
+                        st.json(data["test"])
+                    st.download_button("Descargar informe", payload, filename, "application/json", key=filename)
 
 
 if __name__ == "__main__":

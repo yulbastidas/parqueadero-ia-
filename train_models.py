@@ -54,6 +54,8 @@ def evaluate(model: nn.Module, data: DataLoader) -> dict:
         "recall": tp / max(1, tp + fn),
         "f1": 2 * tp / max(1, 2 * tp + fn + fp),
         "confusion_matrix": [[tn, fp], [fn, tp]],
+        "predicted_counts": {"libre": tn + fn, "ocupada": fp + tp},
+        "predicts_both_classes": bool((tn + fn) and (fp + tp)),
     }
 
 

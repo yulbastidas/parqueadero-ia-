@@ -18,7 +18,7 @@ def draw_detections(frame: Frame, detections: tuple[Detection, ...]) -> Frame:
         top, bottom = (min(height - 1, max(0, y)) for y in (top, bottom))
         color = COLORS.get(detection.class_id, (245, 182, 42))
         # Las fuentes Hershey de OpenCV solo representan caracteres ASCII.
-        label = detection.label.translate(str.maketrans("áó", "ao"))
+        label = detection.label.translate(str.maketrans("áéíóú", "aeiou"))
         text = label if detection.confidence is None else f"{label} {detection.confidence:.0%}"
         font = cv2.FONT_HERSHEY_SIMPLEX
         (text_width, text_height), baseline = cv2.getTextSize(text, font, scale, thickness)

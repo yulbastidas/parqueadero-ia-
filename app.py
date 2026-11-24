@@ -19,6 +19,7 @@ def main() -> int:
     approach = parser.add_mutually_exclusive_group(required=True)
     approach.add_argument("--reference", type=Path, help="Imagen de las plazas vacías para el método clásico")
     approach.add_argument("--checkpoint", type=Path, help="Modelo entrenado con train_models.py")
+    parser.add_argument("--vehicle-checkpoint", type=Path, help="Checkpoint entrenado con train_vehicles.py")
     parser.add_argument("--pixel-threshold", type=int, default=30)
     parser.add_argument("--min-area", type=int, default=300)
     parser.add_argument("--kernel-size", type=int, default=5)
@@ -28,6 +29,8 @@ def main() -> int:
     parser.add_argument("--overlap", type=float, default=0.20)
     parser.add_argument("--confirmation", type=int, default=3)
     args = parser.parse_args()
+    if args.vehicle_checkpoint and not args.checkpoint:
+        parser.error("--vehicle-checkpoint requiere --checkpoint.")
 
     try:
         config = DetectorConfig(args.pixel_threshold, args.min_area, args.kernel_size)
@@ -37,6 +40,10 @@ def main() -> int:
             from src.space_models import SpaceClassifier
 
             detector = SpaceClassifier(args.checkpoint, spaces)
+            if args.vehicle_checkpoint:
+                from src.vehicle_model import VehicleModel
+
+                detector = VehicleModel(args.vehicle_checkpoint, detector)
         else:
             reference = cv2.imread(str(args.reference))
             if reference is None:
@@ -47,7 +54,8 @@ def main() -> int:
         parser.exit(1, f"Error: {error}\n")
 
     report = asdict(summary)
-    report["visual_changes"] = report.pop("vehicle_detections")
+    if not args.vehicle_checkpoint:
+        report["visual_changes"] = report.pop("vehicle_detections")
     method = args.checkpoint.stem if args.checkpoint else "comparacion-de-fondo"
     print(json.dumps({"method": method, "device": "cpu", "config": None if args.checkpoint else asdict(config),
                       "output": str(args.output), **report}, indent=2, ensure_ascii=False))
